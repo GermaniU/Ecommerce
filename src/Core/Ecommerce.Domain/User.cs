@@ -4,7 +4,7 @@ namespace Ecommerce.Domain;
 
 public class User : IdentityUser{
     
-    public string? Name { get; set; }
+    public string? FirstName { get; set; }
 
     public string? LastName { get; set; }
 
@@ -12,7 +12,5 @@ public class User : IdentityUser{
 
     public string? AvatarUrl {get;set;}
 
-    public bool IsActive { get; set; }
-
-
+    public bool IsActive { get; set; } = true;
 }

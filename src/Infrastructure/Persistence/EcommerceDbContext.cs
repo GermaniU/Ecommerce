@@ -2,11 +2,31 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Ecommerce.Domain;
 using Microsoft.AspNetCore.Identity;
+using Ecommerce.Domain.Common;
 
-namespace Ecommerce.Persistence;
+namespace Ecommerce.Infrastructure.Persistence;
 
 public class EcommerceDbContext : IdentityDbContext<User> {
     public EcommerceDbContext(DbContextOptions<EcommerceDbContext> options) : base(options){}
+
+    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken()) {
+       
+       string UserName = "System";
+
+        foreach (var entry in ChangeTracker.Entries<BaseDomainModel>()) {
+            switch (entry.State) {
+                case EntityState.Added:
+                    entry.Entity.CreatedAt = DateTime.Now;
+                    entry.Entity.CreatedBy = UserName;
+                    break;
+                case EntityState.Modified:
+                    entry.Entity.UpdatedAt = DateTime.Now;
+                    entry.Entity.LastModifiedBy = UserName;
+                    break;
+            }
+        }
+        return base.SaveChangesAsync(cancellationToken);
+    }
 
     protected override void OnModelCreating(ModelBuilder builder) {
         base.OnModelCreating(builder);
@@ -65,7 +85,7 @@ public class EcommerceDbContext : IdentityDbContext<User> {
 
     public DbSet<ShoppingCartItem>? ShoppingCartItems { get; set; }
 
-    public DbSet<Country>? Countrys { get; set; }
+    public DbSet<Country>? Countries { get; set; }
 
     public DbSet<OrderAddress>? OrderAddresses { get; set; }
 

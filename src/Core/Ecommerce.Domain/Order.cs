@@ -2,6 +2,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 using  Ecommerce.Domain;
 using Ecommerce.Domain.Common;
 
+namespace Ecommerce.Domain;
+
 public class Order:BaseDomainModel{
     
     public Order(){} // This is required for EF Core
@@ -37,7 +39,8 @@ public class Order:BaseDomainModel{
 
     [Column(TypeName = "decimal(18,2)")]
     public decimal TotalPrice { get;  set; }
-
+  
+    [Column(TypeName = "decimal(18,2)")]
     public decimal Taxes { get;  set; }  
 
     public string? ShippingPrice { get;  set; }

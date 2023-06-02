@@ -1,6 +1,6 @@
 namespace Ecommerce.Domain;
 
-public static class appRole
+public static class AppRole
 {
    public static readonly string GenericUser = "USER";
 

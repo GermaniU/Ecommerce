@@ -1,9 +1,8 @@
-using System.Collections;
 using Ecommerce.Application.Persistence;
-using Ecommerce.Persistence;
-using Ecommerce.Persistence.Repositories;
+using Ecommerce.Infrastructure.Persistence;
+using System.Collections;
 
-namespace Ecommerce.Application.Repositories
+namespace Ecommerce.Infrastructure.Repositories
 {
     public class UnitOfWork : IUnitOfWork
     {
@@ -42,7 +41,7 @@ namespace Ecommerce.Application.Repositories
             }
             catch (Exception ex)
             {
-                throw new Exception("Error al realizar la transacción", ex);
+                throw new ("Error al realizar la transacción", ex);
             }
         }
 
