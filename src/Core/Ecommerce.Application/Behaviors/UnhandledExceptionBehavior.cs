@@ -8,8 +8,22 @@ public class UnhandledExceptionBehavior<TRequest, TResponse> : IPipelineBehavior
 {
     private readonly ILogger<TRequest> _logger;
 
+    public UnhandledExceptionBehavior(ILogger<TRequest> logger)
+    {
+        _logger = logger;
+    }
+
     public Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        try
+        {
+            return next();
+        }
+        catch (Exception ex)
+        {
+            var requestName = typeof(TRequest).Name;
+            _logger.LogError(ex, "Application Request: Unhandled Exception for Request {Name} {@Request}", requestName, request);
+            throw new Exception($"Application Request: Unhandled Exception for Request {requestName}", ex);
+        }
     }
 }

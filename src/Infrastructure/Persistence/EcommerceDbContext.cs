@@ -3,18 +3,23 @@ using Microsoft.EntityFrameworkCore;
 using Ecommerce.Domain;
 using Microsoft.AspNetCore.Identity;
 using Ecommerce.Domain.Common;
+using Ecommerce.Domain.Configuration;
 
 namespace Ecommerce.Infrastructure.Persistence;
 
-public class EcommerceDbContext : IdentityDbContext<User> {
-    public EcommerceDbContext(DbContextOptions<EcommerceDbContext> options) : base(options){}
+public class EcommerceDbContext : IdentityDbContext<User>
+{
+    public EcommerceDbContext(DbContextOptions<EcommerceDbContext> options) : base(options) { }
 
-    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken()) {
-       
-       string UserName = "System";
+    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
+    {
 
-        foreach (var entry in ChangeTracker.Entries<BaseDomainModel>()) {
-            switch (entry.State) {
+        string UserName = "System";
+
+        foreach (var entry in ChangeTracker.Entries<BaseDomainModel>())
+        {
+            switch (entry.State)
+            {
                 case EntityState.Added:
                     entry.Entity.CreatedAt = DateTime.Now;
                     entry.Entity.CreatedBy = UserName;
@@ -28,43 +33,40 @@ public class EcommerceDbContext : IdentityDbContext<User> {
         return base.SaveChangesAsync(cancellationToken);
     }
 
-    protected override void OnModelCreating(ModelBuilder builder) {
+    protected override void OnModelCreating(ModelBuilder builder)
+    {
         base.OnModelCreating(builder);
-        
-        //One to many
-        builder.Entity<Category>()
-                .HasMany(c=> c.Products)
-                .WithOne(r=>r.Category)
-                .HasForeignKey(d=>d.CategoryId)
-                .IsRequired()
-                .OnDelete(DeleteBehavior.Restrict);
+
+        builder.ApplyConfiguration(new OrderConfiguration());
+
+        builder.ApplyConfiguration(new CategoryConfiguration());
 
         builder.Entity<Product>()
-                .HasMany(c=>c.Reviews)
-                .WithOne(r=>r.Product)
-                .HasForeignKey(c=>c.ProductId)
+                .HasMany(c => c.Reviews)
+                .WithOne(r => r.Product)
+                .HasForeignKey(c => c.ProductId)
                 .IsRequired()
                 .OnDelete(DeleteBehavior.Cascade);
 
-                
+
         builder.Entity<ShoppingCart>()
-                .HasMany(c=>c.ShoppingCartItems)
-                .WithOne(r=>r.ShoppingCart)
-                .HasForeignKey(c=>c.ShoppingCartId)
+                .HasMany(c => c.ShoppingCartItems)
+                .WithOne(r => r.ShoppingCart)
+                .HasForeignKey(c => c.ShoppingCartId)
                 .IsRequired()
                 .OnDelete(DeleteBehavior.Cascade);
 
-          builder.Entity<Product>()
-                .HasMany(c=>c.Images)
-                .WithOne(r=>r.Product)
-                .HasForeignKey(c=>c.ProductId)
-                .IsRequired()
-                .OnDelete(DeleteBehavior.Cascade);
+        builder.Entity<Product>()
+              .HasMany(c => c.Images)
+              .WithOne(r => r.Product)
+              .HasForeignKey(c => c.ProductId)
+              .IsRequired()
+              .OnDelete(DeleteBehavior.Cascade);
 
-       builder.Entity<User>().Property(x=> x.Id).HasMaxLength(36);
-        builder.Entity<User>().Property(x=> x.NormalizedUserName).HasMaxLength(90);
-        builder.Entity<IdentityRole>().Property(x=> x.Id).HasMaxLength(36); 
-        builder.Entity<IdentityRole>().Property(x=> x.NormalizedName).HasMaxLength(36);
+        builder.Entity<User>().Property(x => x.Id).HasMaxLength(36);
+        builder.Entity<User>().Property(x => x.NormalizedUserName).HasMaxLength(90);
+        builder.Entity<IdentityRole>().Property(x => x.Id).HasMaxLength(36);
+        builder.Entity<IdentityRole>().Property(x => x.NormalizedName).HasMaxLength(36);
     }
 
     public DbSet<Product>? Products { get; set; }

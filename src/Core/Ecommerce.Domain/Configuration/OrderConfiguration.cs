@@ -16,13 +16,11 @@ public class OrderConfiguration : IEntityTypeConfiguration<Order>
             .WithOne()
             .OnDelete(DeleteBehavior.Cascade);
 
-        builder.Property(s=> s.Status)
+        builder.Property(s => s.Status)
                .HasConversion(
-                o=>o.ToString(),
-                o=>(OrderStatus)Enum.Parse(typeof(OrderStatus),
+                o => o.ToString(),
+                o => (OrderStatus)Enum.Parse(typeof(OrderStatus),
                 o
         ));
-
-        
     }
 }
