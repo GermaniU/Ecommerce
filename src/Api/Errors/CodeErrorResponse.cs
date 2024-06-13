@@ -22,7 +22,7 @@ public class CodeErrorResponse
             Message = message;
     }
 
-    private string GetDefaultMessageForStatusCode(int statusCode)
+    private string? GetDefaultMessageForStatusCode(int statusCode)
     {
         return statusCode switch
         {
