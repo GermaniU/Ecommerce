@@ -1,9 +1,11 @@
 using System.Reflection;
 using AutoMapper;
+using Ecommerce.Application.Behaviors;
 using Ecommerce.Application.Mappings;
 using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Org.BouncyCastle.Asn1.X509.Qualified;
 
 namespace Ecommerce.Application
 {
@@ -17,11 +19,14 @@ namespace Ecommerce.Application
                 mc.AddProfile(new MappingProfile());
             });
 
-            services.AddMediatR(Assembly.GetExecutingAssembly());
+            IMapper mapper = mapperConfig.CreateMapper();
 
+            services.AddSingleton(mapper);
+
+            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(UnhandledExceptionBehaviour<,>));
+            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
             return services;
 
         }
-
     }
 }

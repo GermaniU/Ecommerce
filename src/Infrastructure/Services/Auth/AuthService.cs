@@ -2,10 +2,13 @@
 using Ecommerce.Domain;
 using Ecommerce.Model.Token.Application;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Stripe;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Ecommerce.Infrastructure.Services.Auth
 {
@@ -15,23 +18,24 @@ namespace Ecommerce.Infrastructure.Services.Auth
 
         private readonly IHttpContextAccessor _contextAccessor;
 
-        public AuthService(JwtSettings jwtSettings, IHttpContextAccessor contextAccessor)
+        public AuthService(IOptions<JwtSettings> jwtSettings, IHttpContextAccessor contextAccessor)
         {
-            _jwtSettings = jwtSettings ?? throw new ArgumentNullException(nameof(jwtSettings));
+            _jwtSettings = jwtSettings.Value ?? throw new ArgumentNullException(nameof(jwtSettings));
             _contextAccessor = contextAccessor ?? throw new ArgumentNullException(nameof(contextAccessor));
         }
+       
 
         public string createToken(User user, IList<string>? roles)
         {
             var claims = new List<Claim>
             {
-                new Claim(JwtRegisteredClaimNames.NameId, user.UserName),
+                new Claim(JwtRegisteredClaimNames.NameId, user.UserName!),
                 new Claim("userId", user.Id),
                 new Claim("email", user.Email !)
 
             };
 
-            foreach (var rol in roles)
+            foreach (var rol in roles!)
             {
                 var claim = new Claim(ClaimTypes.Role, rol);
                 claims.Add(claim);

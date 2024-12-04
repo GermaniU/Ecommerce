@@ -23,4 +23,9 @@
     <ProjectReference Include="..\Infrastructure\Ecommerce.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Condition="'$(ExcludeConfigFilesFromBuildOutput)'!='true'" Update="appsettings.Development.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
 </Project>

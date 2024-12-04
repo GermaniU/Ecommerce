@@ -4,6 +4,7 @@ using Ecommerce.Domain;
 using Microsoft.AspNetCore.Identity;
 using Ecommerce.Domain.Common;
 using Ecommerce.Domain.Configuration;
+using System.Reflection.Emit;
 
 namespace Ecommerce.Infrastructure.Persistence;
 
@@ -67,6 +68,11 @@ public class EcommerceDbContext : IdentityDbContext<User>
         builder.Entity<User>().Property(x => x.NormalizedUserName).HasMaxLength(90);
         builder.Entity<IdentityRole>().Property(x => x.Id).HasMaxLength(36);
         builder.Entity<IdentityRole>().Property(x => x.NormalizedName).HasMaxLength(36);
+
+        builder.Entity<Order>()
+         .HasMany(o => o.OrderItems)
+         .WithOne(oi => oi.Order)
+         .HasForeignKey(oi => oi.OrderId);
     }
 
     public DbSet<Product>? Products { get; set; }

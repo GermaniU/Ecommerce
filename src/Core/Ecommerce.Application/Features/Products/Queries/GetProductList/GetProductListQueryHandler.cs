@@ -7,13 +7,13 @@ using System.Linq.Expressions;
 namespace Ecommerce.Application.Features.Products.Queries.GetProductList
 {
 
-    public class GetProductListQueryHandler : IRequestHandler<GetProductListQuery, List<Product>>
+    public class GetProductListQueryHandler : IRequestHandler<GetProductListQuery, IReadOnlyList<Product>>
     {
         private readonly IUnitOfWork _unitOfWork;
 
         public GetProductListQueryHandler(IUnitOfWork unitOfWork) => _unitOfWork = unitOfWork;
 
-        public async Task<List<Product>> Handle(GetProductListQuery request, CancellationToken cancellationToken)
+        public async Task<IReadOnlyList<Product>> Handle(GetProductListQuery request, CancellationToken cancellationToken)
         {
             var includes = new List<Expression<Func<Product, object>>>
             {
@@ -32,7 +32,7 @@ namespace Ecommerce.Application.Features.Products.Queries.GetProductList
                 disableTracking
             );
 
-            return (List<Product>)productList;
+            return productList;
         }
     }
 

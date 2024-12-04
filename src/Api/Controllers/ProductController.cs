@@ -1,6 +1,7 @@
 using Ecommerce.Application.Features.Products.Queries.GetProductList;
 using Ecommerce.Domain;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
@@ -17,9 +18,10 @@ namespace Ecommerce.Api.Controllers
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
+        [AllowAnonymous]
         [HttpGet("list", Name = "GetProductList")]
-        [ProducesResponseType(typeof(IEnumerable<Product>), (int)HttpStatusCode.OK)]
-        public async Task<ActionResult<IEnumerable<Product>>> GetProductList()
+        [ProducesResponseType(typeof(IReadOnlyList<Product>), (int)HttpStatusCode.OK)]
+        public async Task<ActionResult<IReadOnlyList<Product>>> GetProductList()
         {
 
             var query = new GetProductListQuery();
